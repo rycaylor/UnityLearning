@@ -2,16 +2,21 @@
 using System.Collections;
 
 public class Bullet : MonoBehaviour {
-
-	void OnCollisionEnter(Collision collision)
+	public bool power;
+	public void OnCollisionEnter(Collision collision)
 	{
 		var hit = collision.gameObject;
 		var health = hit.GetComponent<Health>();
+		var dmg =10;
+		if (power) {
+			dmg = 90;
+		}
 		if (health  != null)
 		{
-			health.TakeDamage(10);
+			health.TakeDamage(dmg);
 		}
 
 		Destroy(gameObject);
 	}
+
 }

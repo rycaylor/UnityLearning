@@ -7,6 +7,7 @@ public class PlayerController : NetworkBehaviour {
 
 	public GameObject bulletPrefab;
 	public Transform bulletSpawn;
+	public bool power = false;
 
 	void Update()
 	{
@@ -24,7 +25,29 @@ public class PlayerController : NetworkBehaviour {
 		{
 			CmdFire();
 		}
+		if (power) 
+		{
+			GetComponent<MeshRenderer> ().material.color = Color.green;
 
+		}
+	}
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.gameObject.CompareTag("Power"))
+		{
+			other.gameObject.SetActive(false);
+		
+			power = true;
+
+		}
+		if (other.gameObject.CompareTag("Pack"))
+		{
+			other.gameObject.SetActive(false);
+
+			var health = GetComponent<Health>();
+			health.currentHealth += 50;
+
+		}
 	}
 	[Command]
 	void CmdFire()
@@ -36,7 +59,15 @@ public class PlayerController : NetworkBehaviour {
 			bulletSpawn.rotation);
 
 		// Add velocity to the bullet
-		bullet.GetComponent<Rigidbody>().velocity = bullet.transform.forward * 6;
+		if (power) {
+			bullet.GetComponent<Rigidbody> ().velocity = bullet.transform.forward * 25;
+			bullet.GetComponent<Bullet> ().power = true; 
+			power = false;
+			GetComponent<MeshRenderer>().material.color = Color.blue;
+			Debug.Log ("fuck you");
+		} else {
+			bullet.GetComponent<Rigidbody> ().velocity = bullet.transform.forward * 6;
+		}
 		// Spawn the bullet on the Clients
 		NetworkServer.Spawn(bullet);
 
